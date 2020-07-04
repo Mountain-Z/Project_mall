@@ -1,7 +1,9 @@
 <template>
-  <div class="sub-bar">
-    <div class="sub-item" v-for="(item,index) in title" :key="item" @click="itemClick(index)">
-      <span :class="{'item-active':currentIndex == index}">{{item}}</span>
+  <div>
+    <div class="sub-bar">
+      <div class="sub-item" v-for="(item,index) in title" :key="item" @click="itemClick(index)">
+        <span :class="{'item-active':currentIndex == index}">{{item}}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -20,6 +22,7 @@ export default {
   methods: {
     itemClick(index) {
       this.currentIndex = index;
+      this.$emit("pullIndex", index);
     }
   }
 };
@@ -30,6 +33,7 @@ export default {
   display: flex;
   height: 30px;
   color: black;
+  background-color: #fff;
 }
 .sub-item {
   flex: 1;

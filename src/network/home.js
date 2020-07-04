@@ -6,15 +6,15 @@ import request from "./request";
 export function getHomeMultidata() {
   return request({
     url: "/home/multidata"
-  });
+  }).catch(err => err);
 }
 
-// export function getHomeData(type, page) {
-//   return request({
-//     url: "/home/data",
-//     params: {
-//       type,
-//       page
-//     }
-//   });
-// }
+export function getHomeData(type, page) {
+  return request({
+    url: "/home/data",
+    params: {
+      type,
+      page
+    }
+  }).catch(err => err);
+}
