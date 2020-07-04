@@ -22,10 +22,14 @@ export default {
 .nav-bar {
   display: flex;
   height: 40px;
-  background-color: red;
+  /* background-color: red; */
+  line-height: 40px;
+  font-size: var(--font-size);
+  color: #fff;
 }
 .center {
   flex: 1;
+  text-align: center;
 }
 .right.left {
   width: 60px;
