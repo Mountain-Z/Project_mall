@@ -1,12 +1,15 @@
 <template>
-  <div id="SwiperBar">
+  <div id="home">
     <nav-bar class="nav-bar">
       <div slot="center">首页</div>
     </nav-bar>
-    <show-swiper :banner="banner" />
-    <recommendView :recommend="recommend" />
-    <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" />
-    <good-list :goodsList="goodsList[cType].list"></good-list>
+    <scroll class="content" ref="scroll">
+      <show-swiper :banner="banner" />
+      <recommendView :recommend="recommend" />
+      <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" />
+      <good-list :goodsList="goodsList[cType].list"></good-list>
+    </scroll>
+    <back-top @click.native="backClick" />
   </div>
 </template>
 
@@ -15,6 +18,9 @@ import NavBar from "common/navbar/NavBar";
 import showSwiper from "./child/showSwiper";
 import recommendView from "./child/recommendView";
 import goodList from "content/good/goodList";
+import scroll from "common/scroll/scroll";
+
+import backTop from "content/backTop/backTop";
 
 import { getHomeMultidata, getHomeData } from "network/home";
 import subBar from "content/subBar/subBar";
@@ -40,7 +46,9 @@ export default {
     showSwiper,
     recommendView,
     subBar,
-    goodList
+    goodList,
+    scroll,
+    backTop
   },
   created() {
     getHomeMultidata().then(res => {
@@ -54,6 +62,10 @@ export default {
   },
 
   methods: {
+    backClick() {
+      this.$refs.scroll.scroll.scrollTo(0, 0, 500);
+    },
+
     getHomeProducts(type) {
       getHomeData(type, this.goodsList[type].page).then(res => {
         this.goodsList[type].list.push(...res.data.list);
@@ -62,7 +74,6 @@ export default {
         // this.$refs.scroll.finishPullUp();
       });
     },
-
     getIndex(index) {
       this.index = index;
       switch (index) {
@@ -81,9 +92,28 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#home {
+  /* height: 100vh; */
+  padding-top: 44px;
+}
+.content {
+  position: absolute;
+  bottom: 49px;
+  top: 44px;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+}
 .nav-bar {
   background-color: var(--color-high-text);
+  font-weight: 700;
+  color: #fff;
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  z-index: 9;
 }
 .recommend {
   display: flex;
@@ -91,8 +121,9 @@ export default {
 .recomend-item {
   flex: 1;
 }
-.sub-control {
+/* .sub-control {
   position: sticky;
-  top: 0px;
-}
+  top: 44px;
+  z-index: 9;
+} */
 </style>

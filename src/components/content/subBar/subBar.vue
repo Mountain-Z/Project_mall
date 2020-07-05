@@ -28,20 +28,22 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .sub-bar {
   display: flex;
   height: 30px;
+  line-height: 30px;
   color: black;
   background-color: #fff;
+  text-align: center;
 }
 .sub-item {
   flex: 1;
-  /* width: 40px; */
-  text-align: center;
+  width: 40px;
 }
 .sub-item span {
-  padding: 5px;
+  /* margin-top: 5px; */
+  padding: 3px;
 }
 .item-active {
   color: var(--color-high-text);

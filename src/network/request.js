@@ -6,7 +6,7 @@ export default function axios(option) {
     // 1.创建axios的实例
     const instance = originAxios.create({
       baseURL: "http://152.136.185.210:8000/api/n3",
-      timeout: 5000
+      timeout: 30000
     });
 
     // 配置请求和响应拦截

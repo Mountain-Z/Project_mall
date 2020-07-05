@@ -19,11 +19,11 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .list-item {
   /* flex: 1; */
   width: 150px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   padding-bottom: 40px;
   position: relative;
 }
