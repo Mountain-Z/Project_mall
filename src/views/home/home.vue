@@ -3,13 +3,20 @@
     <nav-bar class="nav-bar">
       <div slot="center">首页</div>
     </nav-bar>
-    <scroll class="content" ref="scroll">
+    <scroll
+      class="content"
+      ref="scroll"
+      :probe-type="probeType"
+      :pull-up-load="pullUpLoad"
+      @postPosition="getPosition"
+      @loadFinish="loadPage"
+    >
       <show-swiper :banner="banner" />
       <recommendView :recommend="recommend" />
       <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" />
       <good-list :goodsList="goodsList[cType].list"></good-list>
     </scroll>
-    <back-top @click.native="backClick" />
+    <back-top @click.native="backClick" v-show="isShow" />
   </div>
 </template>
 
@@ -38,7 +45,10 @@ export default {
         pop: { page: 1, list: [] },
         new: { page: 1, list: [] },
         sell: { page: 1, list: [] }
-      }
+      },
+      isShow: false,
+      probeType: 3,
+      pullUpLoad: true
     };
   },
   components: {
@@ -59,19 +69,27 @@ export default {
     this.getHomeProducts("pop");
     this.getHomeProducts("new");
     this.getHomeProducts("sell");
+
+    this.$bus.$on("imgLoad", () => {
+      this.$refs.scroll.scroll.refresh();
+    });
   },
 
   methods: {
+    loadPage() {
+      this.getHomeProducts(this.cType);
+    },
+    getPosition(position) {
+      this.isShow = position.y < -1000;
+    },
     backClick() {
       this.$refs.scroll.scroll.scrollTo(0, 0, 500);
     },
-
     getHomeProducts(type) {
       getHomeData(type, this.goodsList[type].page).then(res => {
         this.goodsList[type].list.push(...res.data.list);
-        console.log(this.goodsList);
         this.goodsList[type].page += 1;
-        // this.$refs.scroll.finishPullUp();
+        this.$refs.scroll.scroll.finishPullUp();
       });
     },
     getIndex(index) {

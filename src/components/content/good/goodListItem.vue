@@ -1,7 +1,7 @@
 <template>
   <div class="list-item">
     <a :href="goodItem.link">
-      <img :src="goodItem.show.img" alt />
+      <img :src="goodItem.show.img" alt @load="imgFinish" />
       <div class="goods-info">
         <p>{{goodItem.title}}</p>
         <span class="price">{{goodItem.price}}</span>
@@ -16,6 +16,11 @@ export default {
   name: "goodListItem",
   props: {
     goodItem: Object
+  },
+  methods: {
+    imgFinish() {
+      this.$bus.$emit("imgLoad");
+    }
   }
 };
 </script>
