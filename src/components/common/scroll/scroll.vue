@@ -37,6 +37,12 @@ export default {
       this.$emit("postPosition", position);
     });
     this.scroll.on("pullingUp", () => this.$emit("loadFinish"));
+  },
+  methods: {
+    refresh() {
+      console.log("sdfg");
+      this.scroll && this.scroll.refresh();
+    }
   }
 };
 </script>

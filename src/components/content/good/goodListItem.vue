@@ -1,7 +1,7 @@
 <template>
   <div class="list-item">
     <a :href="goodItem.link">
-      <img :src="goodItem.show.img" alt @load="imgFinish" />
+      <img :src="goodItem.show.img" alt @load="imgPost" />
       <div class="goods-info">
         <p>{{goodItem.title}}</p>
         <span class="price">{{goodItem.price}}</span>
@@ -18,7 +18,7 @@ export default {
     goodItem: Object
   },
   methods: {
-    imgFinish() {
+    imgPost() {
       this.$bus.$emit("imgLoad");
     }
   }
@@ -26,11 +26,9 @@ export default {
 </script>
 <style scoped>
 .list-item {
-  /* flex: 1; */
-  width: 150px;
-  /* border-radius: 5px; */
-  padding-bottom: 40px;
   position: relative;
+  width: 150px;
+  padding-bottom: 40px;
 }
 .list-item img {
   width: 100%;

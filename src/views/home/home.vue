@@ -3,6 +3,7 @@
     <nav-bar class="nav-bar">
       <div slot="center">首页</div>
     </nav-bar>
+    <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" v-show="subShow" />
     <scroll
       class="content"
       ref="scroll"
@@ -11,9 +12,9 @@
       @postPosition="getPosition"
       @loadFinish="loadPage"
     >
-      <show-swiper :banner="banner" />
+      <show-swiper :banner="banner" @postSwipper="getSwipper" />
       <recommendView :recommend="recommend" />
-      <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" />
+      <sub-bar :title="title" @pullIndex="getIndex" ref="subShow" />
       <good-list :goodsList="goodsList[cType].list"></good-list>
     </scroll>
     <back-top @click.native="backClick" v-show="isShow" />
@@ -26,11 +27,10 @@ import showSwiper from "./child/showSwiper";
 import recommendView from "./child/recommendView";
 import goodList from "content/good/goodList";
 import scroll from "common/scroll/scroll";
-
 import backTop from "content/backTop/backTop";
+import subBar from "content/subBar/subBar";
 
 import { getHomeMultidata, getHomeData } from "network/home";
-import subBar from "content/subBar/subBar";
 
 export default {
   name: "home",
@@ -48,7 +48,9 @@ export default {
       },
       isShow: false,
       probeType: 3,
-      pullUpLoad: true
+      pullUpLoad: true,
+      subShow: false,
+      subTop: 0
     };
   },
   components: {
@@ -61,6 +63,7 @@ export default {
     backTop
   },
   created() {
+    //模板创建前获取服务器信息
     getHomeMultidata().then(res => {
       this.banner = res.data.banner.list;
       this.recommend = res.data.recommend.list;
@@ -69,22 +72,48 @@ export default {
     this.getHomeProducts("pop");
     this.getHomeProducts("new");
     this.getHomeProducts("sell");
+  },
+  mounted() {
+    const refresh = this.debounce(this.$refs.scroll.refresh, 500);
 
+    //利用事件线获取图片加载完成事件，进行防抖处理
     this.$bus.$on("imgLoad", () => {
-      this.$refs.scroll.scroll.refresh();
+      refresh();
     });
   },
-
   methods: {
+    //轮播图加载完成后刷新副标题据顶部位置
+    getSwipper() {
+      this.subTop = this.$refs.subShow.$el.offsetTop;
+    },
+
+    //商品展示防抖处理
+    debounce(fun, delay) {
+      let timer = null;
+      return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          fun.apply(this, args);
+        }, delay);
+      };
+    },
+
+    //下拉加载更多
     loadPage() {
       this.getHomeProducts(this.cType);
     },
+
+    //控制返回到顶部以及浮标题的显示
     getPosition(position) {
       this.isShow = position.y < -1000;
+      this.subShow = -this.subTop > position.y;
     },
+    //控制返回的位置
     backClick() {
       this.$refs.scroll.scroll.scrollTo(0, 0, 500);
     },
+
+    //获取服务器信息
     getHomeProducts(type) {
       getHomeData(type, this.goodsList[type].page).then(res => {
         this.goodsList[type].list.push(...res.data.list);
@@ -92,6 +121,7 @@ export default {
         this.$refs.scroll.scroll.finishPullUp();
       });
     },
+    //监听副标题点击事件
     getIndex(index) {
       this.index = index;
       switch (index) {
@@ -112,8 +142,9 @@ export default {
 
 <style scoped>
 #home {
-  /* height: 100vh; */
-  padding-top: 44px;
+  height: 100vh;
+  /* padding-top: 44px; */
+  /* position: relative; */
 }
 .content {
   position: absolute;
@@ -139,9 +170,9 @@ export default {
 .recomend-item {
   flex: 1;
 }
-/* .sub-control {
-  position: sticky;
+.sub-control {
+  position: relative;
   top: 44px;
-  z-index: 9;
-} */
+  z-index: 10;
+}
 </style>
