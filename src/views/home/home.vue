@@ -3,7 +3,13 @@
     <nav-bar class="nav-bar">
       <div slot="center">首页</div>
     </nav-bar>
-    <sub-bar class="sub-control" :title="title" @pullIndex="getIndex" v-show="subShow" />
+    <sub-bar
+      class="sub-control"
+      ref="subShow1"
+      :title="title"
+      @pullIndex="getIndex"
+      v-show="subShow"
+    />
     <scroll
       class="content"
       ref="scroll"
@@ -14,7 +20,7 @@
     >
       <show-swiper :banner="banner" @postSwipper="getSwipper" />
       <recommendView :recommend="recommend" />
-      <sub-bar :title="title" @pullIndex="getIndex" ref="subShow" />
+      <sub-bar :title="title" @pullIndex="getIndex" ref="subShow2" />
       <good-list :goodsList="goodsList[cType].list"></good-list>
     </scroll>
     <back-top @click.native="backClick" v-show="isShow" />
@@ -50,7 +56,8 @@ export default {
       probeType: 3,
       pullUpLoad: true,
       subShow: false,
-      subTop: 0
+      subTop: 0,
+      saveY: 0
     };
   },
   components: {
@@ -81,10 +88,17 @@ export default {
       refresh();
     });
   },
+  activated() {
+    this.$refs.scroll.scroll.scrollTo(0, this.saveY, 0);
+    this.$refs.scroll.refresh();
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y;
+  },
   methods: {
     //轮播图加载完成后刷新副标题据顶部位置
     getSwipper() {
-      this.subTop = this.$refs.subShow.$el.offsetTop;
+      this.subTop = this.$refs.subShow2.$el.offsetTop;
     },
 
     //商品展示防抖处理
@@ -123,7 +137,6 @@ export default {
     },
     //监听副标题点击事件
     getIndex(index) {
-      this.index = index;
       switch (index) {
         case 0:
           this.cType = "pop";
@@ -135,6 +148,8 @@ export default {
           this.cType = "sell";
           break;
       }
+      this.$refs.subShow1.currentIndex = index;
+      this.$refs.subShow2.currentIndex = index;
     }
   }
 };
